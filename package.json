@@ -19,6 +19,7 @@
     "node-fetch": "^2.2.0",
     "simple-statistics": "^6.1.1",
     "ts-node": "^7.0.1",
+    "twilio": "^3.29.2",
     "typescript": "^3.0.3",
     "veil-js": "^1.0.6"
   }

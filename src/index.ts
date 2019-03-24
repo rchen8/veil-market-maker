@@ -4,10 +4,9 @@ require("dotenv").config();
 import Veil from "veil-js";
 import * as program from "commander";
 import MarketMaker from "./MarketMaker";
-import BulkMarketMaker from "./BulkMarketMaker";
 
 import binary from "./scripts/binary";
-import arbitrage from "./scripts/arbitrage"
+import notification from "./scripts/notification"
 import bestPrice from "./scripts/bestPrice"
 
 process.on("unhandledRejection", err => {
@@ -47,20 +46,14 @@ botProgram("binary <market>").action(async (market: string, cmd) => {
   await marketMaker.start(market, binary);
 });
 
-botProgram("arbitrage").action(async (market: string, cmd) => {
+botProgram("notification <market>").action(async (market: string, cmd) => {
   const marketMaker = initMarketMaker(cmd);
-  await marketMaker.start(market, arbitrage);
+  await marketMaker.start(market, notification);
 });
 
-botProgram("best-price").action(async (market: string, cmd) => {
+botProgram("best-price <market>").action(async (market: string, cmd) => {
   const marketMaker = initMarketMaker(cmd);
   await marketMaker.start(market, bestPrice);
-});
-
-botProgram("bulk").action(async cmd => {
-  const veil = initVeil();
-  const marketMaker = new BulkMarketMaker(veil, cmd.amount, cmd.side);
-  await marketMaker.start();
 });
 
 program.parse(process.argv);

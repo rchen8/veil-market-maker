@@ -1,9 +1,11 @@
 /*
-yarn build && node dist/index.js best-price will-grin-usd-be-listed-on-coinmarketcap-by-march-16-2019 --amount 1 --side long
+yarn build && node dist/index.js best-price will-2020-presidential-candidate-andrew-yang-have-250-000-or-more-twitter-followers-on-april-1-2019-37458e3c --amount 1 --side short
 */
+
 import { IMarketMakerParams, cancelAllOrders } from "../MarketMaker";
 import Veil, { Market } from "veil-js";
 
+const BREAK_EVEN_PRICE = 0.98;
 const PRICE_CONVERSION = 10000.0;
 const PRICE_INCREMENT = 0.0001;
 const AMOUNT_CONVERSION = 100000000000000;
@@ -36,7 +38,7 @@ export default async (params: IMarketMakerParams) => {
 
 const newOrder = async (veil: Veil, market: Market, amount: number, side: "long" | "short",
     price: number) => {
-  if (price >= 0.98) {
+  if (price >= BREAK_EVEN_PRICE) {
     return;
   }
   
