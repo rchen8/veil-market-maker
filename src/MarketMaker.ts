@@ -4,7 +4,9 @@ export interface IMarketMakerParams {
   market: Market;
   veil: any;
   amount: number;
-  side: "long" | "short";
+  price: number;
+  side: "buy" | "sell";
+  type: "long" | "short";
 }
 
 export const cancelAllOrders = async (veil: Veil, market: Market) => {
@@ -18,19 +20,25 @@ export const cancelAllOrders = async (veil: Veil, market: Market) => {
 export default class MarketMaker {
   veil: Veil;
   amount: number;
-  side: "long" | "short";
+  price: number;
+  side: "buy" | "sell";
+  type: "long" | "short";
 
-  constructor(veil: Veil, amount: number = 0, side: "long" | "short") {
+  constructor(veil: Veil, amount: number, price: number, side: "buy" | "sell", type: "long" | "short") {
     this.veil = veil;
     this.amount = amount;
+    this.price = price;
     this.side = side;
+    this.type = type;
   }
 
   get marketMakerParams() {
     return {
       veil: this.veil,
       amount: this.amount,
-      side: this.side
+      price: this.price,
+      side: this.side,
+      type: this.type
     };
   }
 

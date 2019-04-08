@@ -1,5 +1,5 @@
 /*
-yarn build && node dist/index.js best-price will-2020-presidential-candidate-andrew-yang-have-250-000-or-more-twitter-followers-on-april-1-2019-37458e3c --amount 1 --side short
+yarn build && node dist/index.js best-price will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --amount 1 --side sell --type short
 */
 
 import { IMarketMakerParams, cancelAllOrders } from "../MarketMaker";
@@ -14,38 +14,45 @@ const MIN_AMOUNT = 0.1;
 let myPrice = -1;
 
 export default async (params: IMarketMakerParams) => {
-  const { market, veil, amount, side } = params;
+  const { market, veil, amount, side, type } = params;
 
-  const bids = (await veil.getBids(market, side)).results;
-  for (let i = 0; i < bids.length; i++) {
-    const bid = bids[i];
-    const bestPrice = Number(bid.price) / PRICE_CONVERSION;
-    const bestAmount = Number(bid.tokenAmount) / AMOUNT_CONVERSION;
+  const orders = side === "buy" ? (await veil.getBids(market, type)).results :
+      (await veil.getAsks(market, type)).results;
+  for (let i = 0; i < orders.length; i++) {
+    const order = orders[i];
+    const bestPrice = Number(order.price) / PRICE_CONVERSION;
+    const bestAmount = Number(order.tokenAmount) / AMOUNT_CONVERSION;
 
     if (bestPrice === myPrice) {
-      const nextBid = bids[i+1];
-      const nextPrice = Number(nextBid.price) / PRICE_CONVERSION;
-      if (myPrice !== nextPrice + PRICE_INCREMENT) {
-        await newOrder(veil, market, amount, side, nextPrice + PRICE_INCREMENT);
+      const nextOrder = orders[i+1];
+      const nextPrice = Number(nextOrder.price) / PRICE_CONVERSION;
+      if (side === "buy" && myPrice !== nextPrice + PRICE_INCREMENT) {
+        await newOrder(veil, market, amount, side, type, nextPrice + PRICE_INCREMENT);
+      } else if (side === "sell" && myPrice !== nextPrice - PRICE_INCREMENT) {
+        await newOrder(veil, market, amount, side, type, nextPrice - PRICE_INCREMENT);
       }
       break;
     } else if (bestAmount >= MIN_AMOUNT && bestPrice !== myPrice) {
-      await newOrder(veil, market, amount, side, bestPrice + PRICE_INCREMENT);
+      if (side === "buy") {
+        await newOrder(veil, market, amount, side, type, bestPrice + PRICE_INCREMENT);
+      } else {
+        await newOrder(veil, market, amount, side, type, bestPrice - PRICE_INCREMENT);
+      }
       break;
     }
   }
 };
 
-const newOrder = async (veil: Veil, market: Market, amount: number, side: "long" | "short",
-    price: number) => {
+const newOrder = async (veil: Veil, market: Market, amount: number, side: "buy" | "sell",
+    type: "long" | "short", price: number) => {
   if (price >= BREAK_EVEN_PRICE) {
     return;
   }
   
   const quote = await veil.createQuote(
     market,
-    "buy",
     side,
+    type,
     amount,
     price
   );

@@ -1,9 +1,6 @@
 /* 
-yarn build && node dist/index.js notification will-2020-presidential-candidate-andrew-yang-have-250-000-or-more-twitter-followers-on-april-1-2019-37458e3c --side short
-
-TODO:
-- wait for Veil API to support market orders
- */
+yarn build && node dist/index.js notification will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --side short
+*/
 
 require("dotenv").config();
 
