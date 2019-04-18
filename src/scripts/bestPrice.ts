@@ -1,5 +1,5 @@
 /*
-yarn build && node dist/index.js best-price will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --amount 1 --side sell --type short
+yarn build && node dist/index.js best-price will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --amount 3.75 --side sell --type short
 */
 
 import { IMarketMakerParams, cancelAllOrders } from "../MarketMaker";
@@ -23,16 +23,16 @@ export default async (params: IMarketMakerParams) => {
     const bestPrice = Number(order.price) / PRICE_CONVERSION;
     const bestAmount = Number(order.tokenAmount) / AMOUNT_CONVERSION;
 
-    if (bestPrice === myPrice) {
+    if (await isEqual(bestPrice, myPrice)) {
       const nextOrder = orders[i+1];
       const nextPrice = Number(nextOrder.price) / PRICE_CONVERSION;
-      if (side === "buy" && myPrice !== nextPrice + PRICE_INCREMENT) {
+      if (side === "buy" && !(await isEqual(myPrice, nextPrice + PRICE_INCREMENT))) {
         await newOrder(veil, market, amount, side, type, nextPrice + PRICE_INCREMENT);
-      } else if (side === "sell" && myPrice !== nextPrice - PRICE_INCREMENT) {
+      } else if (side === "sell" && !(await isEqual(myPrice, nextPrice - PRICE_INCREMENT))) {
         await newOrder(veil, market, amount, side, type, nextPrice - PRICE_INCREMENT);
       }
       break;
-    } else if (bestAmount >= MIN_AMOUNT && bestPrice !== myPrice) {
+    } else if (bestAmount >= MIN_AMOUNT && !(await isEqual(bestPrice, myPrice))) {
       if (side === "buy") {
         await newOrder(veil, market, amount, side, type, bestPrice + PRICE_INCREMENT);
       } else {
@@ -42,6 +42,10 @@ export default async (params: IMarketMakerParams) => {
     }
   }
 };
+
+const isEqual = async (a: number, b: number) => {
+  return Math.abs(a - b) < 0.00001;
+}
 
 const newOrder = async (veil: Veil, market: Market, amount: number, side: "buy" | "sell",
     type: "long" | "short", price: number) => {
