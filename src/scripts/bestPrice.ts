@@ -1,5 +1,5 @@
 /*
-yarn build && node dist/index.js best-price will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --amount 3.75 --side sell --type short
+yarn build && node dist/index.js best-price will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --amount 1 --side buy --type short
 */
 
 import { IMarketMakerParams, cancelAllOrders } from "../MarketMaker";
@@ -32,7 +32,7 @@ export default async (params: IMarketMakerParams) => {
         await newOrder(veil, market, amount, side, type, nextPrice - PRICE_INCREMENT);
       }
       break;
-    } else if (bestAmount >= MIN_AMOUNT && !(await isEqual(bestPrice, myPrice))) {
+    } else if ((bestPrice * bestAmount) >= MIN_AMOUNT && !(await isEqual(bestPrice, myPrice))) {
       if (side === "buy") {
         await newOrder(veil, market, amount, side, type, bestPrice + PRICE_INCREMENT);
       } else {

@@ -1,5 +1,5 @@
 /* 
-yarn build && node dist/index.js notification will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --type long
+yarn build && node dist/index.js notification will-u-s-presidential-candidate-pete-buttigieg-have-one-million-or-more-twitter-followers-on-may-1-2019-82977aaa --type short
 */
 
 require("dotenv").config();
